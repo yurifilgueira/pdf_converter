@@ -1,5 +1,5 @@
 
-use std::{fs::{create_dir, File, OpenOptions}, io::{self, Error, Write}, path::PathBuf};
+use std::{fs::{create_dir, File}, io::{self, Error, Write}, path::PathBuf};
 use native_dialog::{FileDialog, MessageDialog, MessageType};
 enum FileType {
     Pdf,
@@ -74,7 +74,6 @@ fn open_path_dialog_box() -> Option<PathBuf> {
 
     let yes = open_message_dialog(&path);
 
-
     if yes {
         return Some(path);
     }
@@ -107,15 +106,15 @@ fn write_file(content: &String) -> Result<(), Error> {
         match result {
             Ok(mut file) => {
                 if let Err(e) = file.write(content.as_bytes()) {
-                    eprintln!("Erro ao escrever no arquivo pdf_to_txt.txt: {}", e);
+                    eprintln!("Error writing to file pdf_to_txt.txt: {}", e);
                 } else {
-                    println!("Arquivo pdf_to_txt.txt sobrescrito com sucesso!");
+                    println!("File pdf_to_txt.txt written successfully!");
                 }
             }
             Err(e) => {
-                eprintln!("Erro ao abrir o arquivo pdf_to_txt.txt: {}", e);
+                eprintln!("Error opening file pdf_to_txt.txt: {}", e);
             }
-        }
+        }        
 
     }
     
@@ -124,7 +123,14 @@ fn write_file(content: &String) -> Result<(), Error> {
 
 fn create_file(path: &PathBuf) -> Result<File, Error>{
 
-    let file = File::create(path)?;
+    let file_location = unwrap_pathbuf_to_string(&Some(path.to_path_buf())).unwrap();
+    let file_location = format!("{}/pdf_to_txt.txt", file_location);    
+
+    let path = PathBuf::from(&file_location);
+
+    let file = File::create(&path)?;
+
+    println!("{}", path.display());
 
     Ok(file)
 }
@@ -147,7 +153,6 @@ fn unwrap_pathbuf_to_string(path: &Option<PathBuf>) -> Result<String, &'static s
         None => Err("Path is None"),
     }
 }
-
 
 fn main() {
 
